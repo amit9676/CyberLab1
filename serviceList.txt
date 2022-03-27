@@ -1,0 +1,25 @@
+data logging time: 27/03/2022 16:34:17
+services:
+acpid
+apparmora
+apport
+avahi-daemon
+binfmt-support
+cron
+cups
+cups-browsed
+dbus
+gdm3
+irqbalance
+kerneloops
+kmod
+network-manager
+openbsd-inetd
+openvpn
+procps
+rsyslog
+ubuntu-fan
+udev
+ufw
+unattended-upgrades
+whoopsie
