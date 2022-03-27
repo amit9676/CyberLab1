@@ -40,7 +40,6 @@ def writeMonitorData(list1,dt_string,operSYstem):
         with open("./serviceList.txt", "w") as file:  # open new file
             file.write(f"data logging time: {dt_string}\n")
             file.write("services:\n")
-            ptt = subprocess.check_output(["service","--status-all"])
             if(operSYstem == "Linux"):
                 LinuxServices = subprocess.check_output(["service", "--status-all"]).decode("utf-8")
                 for serv in LinuxServices.split("\n"):
