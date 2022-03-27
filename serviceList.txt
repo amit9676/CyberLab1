@@ -1,7 +1,7 @@
-data logging time: 27/03/2022 16:34:17
+data logging time: 28/03/2022 01:15:32
 services:
 acpid
-apparmora
+apparmor
 apport
 avahi-daemon
 binfmt-support
@@ -20,6 +20,6 @@ procps
 rsyslog
 ubuntu-fan
 udev
-ufw
 unattended-upgrades
+uuidd
 whoopsie

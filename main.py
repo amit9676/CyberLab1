@@ -13,6 +13,7 @@ def manual(date1,date2):
     counter = 0
     try:
         with open("./statusLog.txt", "r") as file:
+
             #print("mod%s"%time.ctime(os.path.getmtime("./statusLog.txt")))
             while line != "":
                 line = file.readline()
@@ -62,39 +63,65 @@ def writeMonitorData(list1,dt_string,operSYstem):
     except Exception as e:
         print(str(e))
 
-def fileWrite(filename,message):
+def hashMaker(file):
+    hasher = hashlib.md5()
+    q = file.read()
+    hasher.update(q.encode('utf-8'))
+    return hasher.hexdigest()
+
+def fileWrite(filename,message,hashInput):
+
     try:
-        with open("./" + filename, "a") as file:  # open new file
+        hashVerify = None
+        with open("./" + filename, "r") as file:  # open new file
+            hashVerify = hashMaker(file)
+            if(hashInput != hashVerify):
+                print("error, data was unauthorized modified")
+                return None
+        with open("./" + filename, "a") as file:
             file.write(message)
+        with open("./" + filename, "r") as file:
+            hashVerify = hashMaker(file)
+        return hashVerify
+
     except Exception as e:
         print(str(e))
 
-def compareDicts(list1, list2, dt_string):
+def compareDicts(list1, list2, dt_string, logWriterHash):
     for key in list1.keys():
         if key not in list2:
-            fileWrite("statusLog.txt",f"{dt_string}: {key} is now {list1[key]}\n")
+            logWriterHash = fileWrite("statusLog.txt",f"{dt_string}: {key} is now {list1[key]}\n", logWriterHash)
+            if(logWriterHash == None):
+                return None
             print(f"{dt_string}: {key} is added and {list1[key]}")
         elif(list2[key] != list1[key]):
-            fileWrite("statusLog.txt",f"{dt_string}: {key} is now {list1[key]}\n")
+            logWriterHash = fileWrite("statusLog.txt",f"{dt_string}: {key} is now {list1[key]}\n", logWriterHash)
+            if(logWriterHash == None):
+                return None
             print(f"{dt_string}: {key} is now {list1[key]}")
 
     for key in list2.keys():
         if key not in list1:
-            fileWrite("statusLog.txt",f"{dt_string}: {key} is deleted\n")
+            logWriterHash = fileWrite("statusLog.txt",f"{dt_string}: {key} is deleted\n",logWriterHash)
+            if(logWriterHash == None):
+                return None
             print(f"{dt_string}: {key} is deleted")
+    return logWriterHash
 
 def initialInputHandler():
     #print("enter mode type (monitor or manual):")
     #print(platform.system())
     operSystem = platform.system()
-
+    logWriterHash = None
     if not os.path.exists("./serviceList.txt"):
         with open("./serviceList.txt", "w") as file:
             pass
-    if not os.path.exists("./statusLog.txt"):
-         with open("./statusLog.txt", "w") as file:
-             pass
+    #if not os.path.exists("./statusLog.txt"):
+    with open("./statusLog.txt", "r") as file:
+        logWriterHash = hashMaker(file)
 
+
+    #hasher = hashlib.md5()
     mode = input("enter mode type (monitor or manual): ")
     if(mode == "monitor"):
         validInput = False
@@ -113,7 +140,9 @@ def initialInputHandler():
             list1 = {}
             writeMonitorData(list1, dt_string,operSystem)
             if not fitstTime:
-                compareDicts(list1,list2,dt_string)
+                logWriterHash = compareDicts(list1,list2,dt_string, logWriterHash)
+                if(logWriterHash == None):
+                    return
             fitstTime = False
             list2 = copy.deepcopy(list1)
             time.sleep(Intervaltime)
@@ -127,11 +156,13 @@ def initialInputHandler():
         dateEnter = False
         my_date1 = None
         my_date2 = None
+        oneDone = False
         while not dateEnter:
             try:
-                my_string = str(input('Enter date 1 (yyyy-mm-dd hh:mm:ss): '))
-                my_date1 = datetime.strptime(my_string, "%Y-%m-%d %H:%M:%S")
-
+                if not oneDone:
+                    my_string = str(input('Enter date 1 (yyyy-mm-dd hh:mm:ss): '))
+                    my_date1 = datetime.strptime(my_string, "%Y-%m-%d %H:%M:%S")
+                oneDone = True
                 my_string2 = str(input('Enter date 2 (yyyy-mm-dd hh:mm:ss): '))
                 my_date2 = datetime.strptime(my_string2, "%Y-%m-%d %H:%M:%S")
                 dateEnter = True
