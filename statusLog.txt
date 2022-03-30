@@ -42,3 +42,4 @@
 28/03/2022 02:03:28: TrustedInstaller is now stopped
 28/03/2022 02:03:59: AppXSvc is now stopped
 28/03/2022 02:04:58: ClipSVC is now stopped
+28/03/2022 02:09:07: kmod is now stopped

@@ -42,6 +42,8 @@ def writeMonitorData(list1,dt_string,operSYstem):
             file.write("services:\n")
             if(operSYstem == "Linux"):
                 LinuxServices = subprocess.check_output(["service", "--status-all"]).decode("utf-8")
+                #subprocess.run(["chmod 444 statusLog.txt"])
+
                 for serv in LinuxServices.split("\n"):
                     if(len(serv) == 0):
                         continue
@@ -108,9 +110,12 @@ def compareDicts(list1, list2, dt_string, logWriterHash):
     return logWriterHash
 
 def initialInputHandler():
-    #print("enter mode type (monitor or manual):")
-    #print(platform.system())
     operSystem = platform.system()
+    if(operSystem == "Linux"):
+        os.chmod("serviceList.txt", 0o644)
+        os.chmod("statusLog.txt", 0o644)
+        #only owner can edit files, the rest can read only
+
     logWriterHash = None
     if not os.path.exists("./serviceList.txt"):
         with open("./serviceList.txt", "w") as file:
